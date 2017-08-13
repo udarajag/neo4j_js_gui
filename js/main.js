@@ -38,25 +38,31 @@ function initialize(){
 
 function search(){
 	var statementx = $('#freeTS').val();
-	var data = {
+	/*var data = {
 			  "statements" : [ {
 				  "statement" : "MATCH (x )-[r]-(y) RETURN x,r,y LIMIT 25",
 				    "resultDataContents" : [  "graph" ]
 				  } ]
-				};
-	if(statementx!='undefined'){
-		data = {
+				};*/
+	if(statementx!='undefined' && statementx != ''){
+		var query = "MATCH ((x )-[r]-(y)) WHERE x.name =~ '(?i).*" + statementx + ".*' or y.name =~ '(?i).*" + statementx + ".*' RETURN x,r,y";
+		
+		var data = {
 			  	"statements" :[ {
-				  statement : statementx,
+				  statement : query,
 				    resultDataContents : [  "graph" ]
 				  } ]
 				};
+		sendAjax("POST", "http://localhost:7474/db/data/transaction/commit", data, intiGraph, null);
 	}
-	sendAjax("POST", "http://localhost:7474/db/data/transaction/commit", data, intiGraph, null);
+	else{
+		alert("Please enter search text");
+	}
+	
 }
 
 function initBadge(returnData){
-	alert(returnData);
+	//alert(returnData);
 }
 
 
@@ -109,14 +115,17 @@ function intiGraph(returnData){
 						{
 							selector: 'node',
 							style: {
-								'content': 'data(name)'
+								'content': 'data(name)',
+								
 							}
 						},
 
 						{
 							selector: 'edge',
 							style: {
-								'target-arrow-shape': 'triangle'
+								'target-arrow-shape': 'triangle',
+								'label': 'data(name)',
+								'text-rotation': 'autorotate'
 							}
 						},
 
