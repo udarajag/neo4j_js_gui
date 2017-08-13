@@ -26,7 +26,14 @@ function initialize(){
 				    "resultDataContents" : [  "graph" ]
 				  } ]
 				};
-	sendAjax("POST", "http://localhost:7474/db/data/transaction/commit", data, initializeLoad, null);
+	sendAjax("POST", "http://localhost:7474/db/data/transaction/commit", data, intiGraph, null);
+	var data2 = {
+			  "statements" : [ {
+				  "statement" : "MATCH (x )-[r]-(y) RETURN x,r,y LIMIT 25",
+				    "resultDataContents" : [  "graph" ]
+				  } ]
+				};
+	sendAjax("POST", "http://localhost:7474/db/data/transaction/commit", data2, initBadge, null);
 }
 
 function search(){
@@ -45,11 +52,15 @@ function search(){
 				  } ]
 				};
 	}
-	sendAjax("POST", "http://localhost:7474/db/data/transaction/commit", data, initializeLoad, null);
+	sendAjax("POST", "http://localhost:7474/db/data/transaction/commit", data, intiGraph, null);
+}
+
+function initBadge(returnData){
+	alert(returnData);
 }
 
 
-function initializeLoad(returnData){
+function intiGraph(returnData){
 	
 	var elements = [];
 	var elementObjs = returnData.results[0].data;
@@ -94,30 +105,119 @@ function initializeLoad(returnData){
 		  elements: elements,
 		  
 
-		  style: [ // the stylesheet for the graph
-		    {
-		      selector: 'node',
-		      style: {
-		        'background-color': '#4169E1',
-		        'label': 'data(name)'
-		      }
-		    },
+		  style: [
+						{
+							selector: 'node',
+							style: {
+								'content': 'data(name)'
+							}
+						},
 
-		    {
-		      selector: 'edge',
-		      style: {
-		        'width': 3,
-		        'line-color': '#ccc',
-		        'target-arrow-color': '#ccc',
-		        'target-arrow-shape': 'triangle',
-		        'label': 'data(name)'
-		      }
-		    }
-		  ],
+						{
+							selector: 'edge',
+							style: {
+								'target-arrow-shape': 'triangle'
+							}
+						},
 
-		  layout: {
-		    name: 'random',
-		  }
+						{
+							selector: ':selected',
+							style: {
+
+							}
+						}
+					],
+					layout: {
+						name: 'breadthfirst'
+					},
 
 		});
+
+	var selectAllOfTheSameType = function(ele) {
+                                    cy.elements().unselect();
+                                    if(ele.isNode()) {
+                                        cy.nodes().select();
+                                    }
+                                    else if(ele.isEdge()) {
+                                        cy.edges().select();
+                                    }
+                                };
+    // demo your core ext
+				cy.contextMenus({
+                                    menuItems: [
+                                        {
+                                            id: 'remove',
+                                            content: 'remove',
+                                            tooltipText: 'remove',
+                                            image: {src : "remove.svg", width : 12, height : 12, x : 6, y : 4},
+                                            selector: 'node, edge',
+                                            onClickFunction: function (event) {
+                                              var target = event.target || event.cyTarget;
+                                              target.remove();
+                                            },
+                                            hasTrailingDivider: true
+                                          },
+                                          {
+                                            id: 'hide',
+                                            content: 'hide',
+                                            tooltipText: 'hide',
+                                            selector: '*',
+                                            onClickFunction: function (event) {
+                                              var target = event.target || event.cyTarget;
+                                              target.hide();
+                                            },
+                                            disabled: false
+                                          },
+                                          {
+                                            id: 'add-node',
+                                            content: 'add node',
+                                            tooltipText: 'add node',
+                                            image: {src : "add.svg", width : 12, height : 12, x : 6, y : 4},
+                                            coreAsWell: true,
+                                            onClickFunction: function (event) {
+                                              var data = {
+                                                  group: 'nodes'
+                                              };
+                                              
+                                              var pos = event.position || event.cyPosition;
+                                              
+                                              cy.add({
+                                                  data: data,
+                                                  position: {
+                                                      x: pos.x,
+                                                      y: pos.y
+                                                  }
+                                              });
+                                            }
+                                          },
+                                          {
+                                            id: 'remove-selected',
+                                            content: 'remove selected',
+                                            tooltipText: 'remove selected',
+                                            image: {src : "remove.svg", width : 12, height : 12, x : 6, y : 6},
+                                            coreAsWell: true,
+                                            onClickFunction: function (event) {
+                                              cy.$(':selected').remove();
+                                            }
+                                          },
+                                          {
+                                            id: 'select-all-nodes',
+                                            content: 'select all nodes',
+                                            tooltipText: 'select all nodes',
+                                            selector: 'node',
+                                            onClickFunction: function (event) {
+                                              selectAllOfTheSameType(event.target || event.cyTarget);
+                                            }
+                                          },
+                                          {
+                                            id: 'select-all-edges',
+                                            content: 'select all edges',
+                                            tooltipText: 'select all edges',
+                                            selector: 'edge',
+                                            onClickFunction: function (event) {
+                                              selectAllOfTheSameType(event.target || event.cyTarget);
+                                            }
+                                          }
+                                        ]
+                                      });
 }
