@@ -36,31 +36,6 @@ function initialize(){
 	sendAjax("POST", "http://localhost:7474/db/data/transaction/commit", data2, initBadge, null);
 }
 
-function search(){
-	var statementx = $('#freeTS').val();
-	/*var data = {
-			  "statements" : [ {
-				  "statement" : "MATCH (x )-[r]-(y) RETURN x,r,y LIMIT 25",
-				    "resultDataContents" : [  "graph" ]
-				  } ]
-				};*/
-	if(statementx!='undefined' && statementx != ''){
-		var query = "MATCH ((x )-[r]-(y)) WHERE x.name =~ '(?i).*" + statementx + ".*' or y.name =~ '(?i).*" + statementx + ".*' RETURN x,r,y";
-		
-		var data = {
-			  	"statements" :[ {
-				  statement : query,
-				    resultDataContents : [  "graph" ]
-				  } ]
-				};
-		sendAjax("POST", "http://localhost:7474/db/data/transaction/commit", data, intiGraph, null);
-	}
-	else{
-		alert("Please enter search text");
-	}
-	
-}
-
 function initBadge(returnData){
 	//alert(returnData);
 }
@@ -72,10 +47,16 @@ function intiGraph(returnData){
 	var elementObjs = returnData.results[0].data;
 	$.each(elementObjs, function( index, value ) {
 		$.each(value.graph.nodes, function( index1, nodeObj ) {
+			var nodeName = nodeObj.properties.name;
+			if(nodeName.length > 8){
+				nodeName = nodeName.substring(0, 8) + '...';
+			}
 		
 			//var nodeObj = value.graph.nodes[0];
 		  var node = {data: {id:nodeObj.id, 
-			  				name:nodeObj.properties.name }};
+			  				name:nodeName,
+			  				fullName: nodeObj.properties.name
+		  }};
 		  
 		  elements.push(node);
 		
@@ -103,7 +84,6 @@ function intiGraph(returnData){
 		
 		});
 	
-	
 	var cy = cytoscape({
 		
 		  container: $('#cy'), // container to render in
@@ -115,14 +95,40 @@ function intiGraph(returnData){
 						{
 							selector: 'node',
 							style: {
+								/*'content': 'data(name)',
+								'text-wrap': 'wrap',
+								'text-max-width': '100px',
+								'text-valign': 'center',
+						        'text-halign': 'center',
+						        'width': '100px',
+						        'height': '100px',
+						        'font-size': '30px'*/
+								 'font-size': '23px',
+								'width': '80px',
+						        'height': '80px',
+								'background-color': '#40E0D0',
+								//'label': 'data(id)',
+								'label': 'data(name)',
+								//'display':'flex',
+								//'text-align': 'center',
+								'border-style': 'solid',
+								'border-color': '#008B8B',
+								'border-width': '1px',
+								'padding': '10px 2% 15px 15px',
+								//'content': 'data(name)',
+								//'justify-content': 'space-around',
+								//caption-side: top|bottom|initial|inherit
+								'caption-side': 'bottom',
+								'text-valign': 'center',
+						    'text-halign': 'center',
 								'content': 'data(name)',
-								
 							}
 						},
 
 						{
 							selector: 'edge',
 							style: {
+								'curve-style': 'bezier',
 								'target-arrow-shape': 'triangle',
 								'label': 'data(name)',
 								'text-rotation': 'autorotate'
