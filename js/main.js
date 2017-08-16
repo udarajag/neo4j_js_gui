@@ -75,6 +75,28 @@ function initBadge(returnData){
 	//alert(returnData);
 }
 
+function prettyJson(json) {
+    if (typeof json != 'string') {
+         json = JSON.stringify(json, undefined, 2);
+    }
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        var cls = 'number';
+        if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+                cls = 'key';
+            } else {
+                cls = 'string';
+            }
+        } else if (/true|false/.test(match)) {
+            cls = 'boolean';
+        } else if (/null/.test(match)) {
+            cls = 'null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+    });
+}
+
 
 function intiGraph(returnData){
 	
@@ -200,19 +222,19 @@ function intiGraph(returnData){
 						}
 					]
 				});
-  	cy.on('select unselect', 'node', _.debounce( function(e){
-      var node = cy.$('node:selected');
+  	cy.on('select unselect', 'node', function(e){
+      //var node = cy.$('node:selected');
 
-      if( node.nonempty() ){
-        //showNodeInfo( node );
-
+      if( e!=null ){
+        var json = JSON.stringify(e.target._private.data);
+        $("#selData").val(json);
+        //$("#dataSel").html(prettyJson(json));
         Promise.resolve().then(function(){
-          return highlight( node );
+          //return highlight( node );
         });
       } else {
-        //hideNodeInfo();
-        //clear();
+        $("selData").val('');
       }
 
-    }, 100 ) );
+    });
 }
