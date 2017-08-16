@@ -120,7 +120,8 @@ function intiGraph(returnData){
 								//caption-side: top|bottom|initial|inherit
 								'caption-side': 'bottom',
 								'text-valign': 'center',
-						        'text-halign': 'center',
+						    'text-halign': 'center',
+								'content': 'data(name)',
 							}
 						},
 
