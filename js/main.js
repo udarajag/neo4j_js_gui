@@ -1,5 +1,20 @@
+var glayout = 'breadthfirst';
+
 $(document).ready(function(){
 	initialize();
+	//To set different layouts
+	$("#b1").click(function(){
+		glayout = 'random';
+		initialize();
+	});
+		$("#b2").click(function(){
+		glayout = 'cose';
+		initialize();
+	});
+		$("#b3").click(function(){
+		glayout = 'breadthfirst';
+		initialize();
+	});
 });
 
 
@@ -34,16 +49,11 @@ function initialize(){
 				  } ]
 				};
 	sendAjax("POST", "http://localhost:7474/db/data/transaction/commit", data2, initBadge, null);
+
 }
 
 function search(){
 	var statementx = $('#freeTS').val();
-	/*var data = {
-			  "statements" : [ {
-				  "statement" : "MATCH (x )-[r]-(y) RETURN x,r,y LIMIT 25",
-				    "resultDataContents" : [  "graph" ]
-				  } ]
-				};*/
 	if(statementx!='undefined' && statementx != ''){
 		var query = "MATCH ((x )-[r]-(y)) WHERE x.name =~ '(?i).*" + statementx + ".*' or y.name =~ '(?i).*" + statementx + ".*' RETURN x,r,y";
 		
@@ -72,10 +82,16 @@ function intiGraph(returnData){
 	var elementObjs = returnData.results[0].data;
 	$.each(elementObjs, function( index, value ) {
 		$.each(value.graph.nodes, function( index1, nodeObj ) {
-		
+			var nodeName = nodeObj.properties.name;
+			if(nodeName.length > 8){
+				nodeName = nodeName.substring(0, 8) + '...';
+			}
+
 			//var nodeObj = value.graph.nodes[0];
 		  var node = {data: {id:nodeObj.id, 
-			  				name:nodeObj.properties.name }};
+			  				name:nodeName,
+			  				fullName: nodeObj.properties.name
+		  }};
 		  
 		  elements.push(node);
 		
@@ -83,8 +99,7 @@ function intiGraph(returnData){
 		
 		
 		$.each(value.graph.relations, function( index1, relationObj ) {
-		
-			//var nodeObj = value.graph.nodes[0];
+
 		  var node = {data: {id:relationObj.id, 
 			  				name:relationObj.properties.name }};
 		  
@@ -93,12 +108,8 @@ function intiGraph(returnData){
 		})
 		
 		$.each(value.graph.relationships, function( index2, relationObj ) {
-		
-			//var nodeObj = value.graph.nodes[0];
 		  var relationship = {data: { id: relationObj.id, source: relationObj.startNode, target: relationObj.endNode, name:relationObj.type }};
-		  
 		  elements.push(relationship);
-		
 		})
 		
 		});
@@ -115,14 +126,26 @@ function intiGraph(returnData){
 						{
 							selector: 'node',
 							style: {
+								'font-size': '23px',
+								'width': '80px',
+						        'height': '80px',
+								'background-color': '#40E0D0',
+								'label': 'data(name)',
+								'border-style': 'solid',
+								'border-color': '#008B8B',
+								'border-width': '1px',
+								'padding': '10px 2% 15px 15px',
+								'caption-side': 'bottom',
+								'text-valign': 'center',
+						        'text-halign': 'center',
 								'content': 'data(name)',
-								
 							}
 						},
 
 						{
 							selector: 'edge',
 							style: {
+								'curve-style': 'bezier',
 								'target-arrow-shape': 'triangle',
 								'label': 'data(name)',
 								'text-rotation': 'autorotate'
@@ -137,7 +160,7 @@ function intiGraph(returnData){
 						}
 					],
 					layout: {
-						name: 'breadthfirst'
+						name: glayout
 					},
 
 		});
@@ -151,82 +174,45 @@ function intiGraph(returnData){
                                         cy.edges().select();
                                     }
                                 };
-    // demo your core ext
-				cy.contextMenus({
-                                    menuItems: [
-                                        {
-                                            id: 'remove',
-                                            content: 'remove',
-                                            tooltipText: 'remove',
-                                            image: {src : "remove.svg", width : 12, height : 12, x : 6, y : 4},
-                                            selector: 'node, edge',
-                                            onClickFunction: function (event) {
-                                              var target = event.target || event.cyTarget;
-                                              target.remove();
-                                            },
-                                            hasTrailingDivider: true
-                                          },
-                                          {
-                                            id: 'hide',
-                                            content: 'hide',
-                                            tooltipText: 'hide',
-                                            selector: '*',
-                                            onClickFunction: function (event) {
-                                              var target = event.target || event.cyTarget;
-                                              target.hide();
-                                            },
-                                            disabled: false
-                                          },
-                                          {
-                                            id: 'add-node',
-                                            content: 'add node',
-                                            tooltipText: 'add node',
-                                            image: {src : "add.svg", width : 12, height : 12, x : 6, y : 4},
-                                            coreAsWell: true,
-                                            onClickFunction: function (event) {
-                                              var data = {
-                                                  group: 'nodes'
-                                              };
-                                              
-                                              var pos = event.position || event.cyPosition;
-                                              
-                                              cy.add({
-                                                  data: data,
-                                                  position: {
-                                                      x: pos.x,
-                                                      y: pos.y
-                                                  }
-                                              });
-                                            }
-                                          },
-                                          {
-                                            id: 'remove-selected',
-                                            content: 'remove selected',
-                                            tooltipText: 'remove selected',
-                                            image: {src : "remove.svg", width : 12, height : 12, x : 6, y : 6},
-                                            coreAsWell: true,
-                                            onClickFunction: function (event) {
-                                              cy.$(':selected').remove();
-                                            }
-                                          },
-                                          {
-                                            id: 'select-all-nodes',
-                                            content: 'select all nodes',
-                                            tooltipText: 'select all nodes',
-                                            selector: 'node',
-                                            onClickFunction: function (event) {
-                                              selectAllOfTheSameType(event.target || event.cyTarget);
-                                            }
-                                          },
-                                          {
-                                            id: 'select-all-edges',
-                                            content: 'select all edges',
-                                            tooltipText: 'select all edges',
-                                            selector: 'edge',
-                                            onClickFunction: function (event) {
-                                              selectAllOfTheSameType(event.target || event.cyTarget);
-                                            }
-                                          }
-                                        ]
-                                      });
+  	cy.cxtmenu({
+					selector: 'node, edge',
+
+					commands: [
+						{
+							content: 'Data',
+							select: function(ele){
+								console.log( ele.id() );
+							}
+						},
+
+						{
+							content: 'Meta Data',
+							select: function(ele){
+								console.log( ele.data('name') );
+							}
+						},
+
+						{
+							content: 'Children',
+							select: function(ele){
+								console.log( ele.position() );
+							}
+						}
+					]
+				});
+  	cy.on('select unselect', 'node', _.debounce( function(e){
+      var node = cy.$('node:selected');
+
+      if( node.nonempty() ){
+        //showNodeInfo( node );
+
+        Promise.resolve().then(function(){
+          return highlight( node );
+        });
+      } else {
+        //hideNodeInfo();
+        //clear();
+      }
+
+    }, 100 ) );
 }
