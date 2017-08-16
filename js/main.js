@@ -54,12 +54,6 @@ function initialize(){
 
 function search(){
 	var statementx = $('#freeTS').val();
-	/*var data = {
-			  "statements" : [ {
-				  "statement" : "MATCH (x )-[r]-(y) RETURN x,r,y LIMIT 25",
-				    "resultDataContents" : [  "graph" ]
-				  } ]
-				};*/
 	if(statementx!='undefined' && statementx != ''){
 		var query = "MATCH ((x )-[r]-(y)) WHERE x.name =~ '(?i).*" + statementx + ".*' or y.name =~ '(?i).*" + statementx + ".*' RETURN x,r,y";
 		
@@ -105,8 +99,7 @@ function intiGraph(returnData){
 		
 		
 		$.each(value.graph.relations, function( index1, relationObj ) {
-		
-			//var nodeObj = value.graph.nodes[0];
+
 		  var node = {data: {id:relationObj.id, 
 			  				name:relationObj.properties.name }};
 		  
@@ -115,12 +108,8 @@ function intiGraph(returnData){
 		})
 		
 		$.each(value.graph.relationships, function( index2, relationObj ) {
-		
-			//var nodeObj = value.graph.nodes[0];
 		  var relationship = {data: { id: relationObj.id, source: relationObj.startNode, target: relationObj.endNode, name:relationObj.type }};
-		  
 		  elements.push(relationship);
-		
 		})
 		
 		});
@@ -137,32 +126,18 @@ function intiGraph(returnData){
 						{
 							selector: 'node',
 							style: {
-								/*'content': 'data(name)',
-								'text-wrap': 'wrap',
-								'text-max-width': '100px',
-								'text-valign': 'center',
-						        'text-halign': 'center',
-						        'width': '100px',
-						        'height': '100px',
-						        'font-size': '30px'*/
-								 'font-size': '23px',
+								'font-size': '23px',
 								'width': '80px',
 						        'height': '80px',
 								'background-color': '#40E0D0',
-								//'label': 'data(id)',
 								'label': 'data(name)',
-								//'display':'flex',
-								//'text-align': 'center',
 								'border-style': 'solid',
 								'border-color': '#008B8B',
 								'border-width': '1px',
 								'padding': '10px 2% 15px 15px',
-								//'content': 'data(name)',
-								//'justify-content': 'space-around',
-								//caption-side: top|bottom|initial|inherit
 								'caption-side': 'bottom',
 								'text-valign': 'center',
-						    'text-halign': 'center',
+						        'text-halign': 'center',
 								'content': 'data(name)',
 							}
 						},
