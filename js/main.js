@@ -1,5 +1,20 @@
+var glayout = 'breadthfirst';
+
 $(document).ready(function(){
 	initialize();
+	//To set different layouts
+	$("#b1").click(function(){
+		glayout = 'random';
+		initialize();
+	});
+		$("#b2").click(function(){
+		glayout = 'cose';
+		initialize();
+	});
+		$("#b3").click(function(){
+		glayout = 'breadthfirst';
+		initialize();
+	});
 });
 
 
@@ -34,6 +49,7 @@ function initialize(){
 				  } ]
 				};
 	sendAjax("POST", "http://localhost:7474/db/data/transaction/commit", data2, initBadge, null);
+
 }
 
 function search(){
@@ -115,8 +131,7 @@ function intiGraph(returnData){
 						{
 							selector: 'node',
 							style: {
-								'content': 'data(name)',
-								
+								'content': 'data(name)'
 							}
 						},
 
@@ -137,7 +152,7 @@ function intiGraph(returnData){
 						}
 					],
 					layout: {
-						name: 'breadthfirst'
+						name: glayout
 					},
 
 		});
@@ -151,82 +166,45 @@ function intiGraph(returnData){
                                         cy.edges().select();
                                     }
                                 };
-    // demo your core ext
-				cy.contextMenus({
-                                    menuItems: [
-                                        {
-                                            id: 'remove',
-                                            content: 'remove',
-                                            tooltipText: 'remove',
-                                            image: {src : "remove.svg", width : 12, height : 12, x : 6, y : 4},
-                                            selector: 'node, edge',
-                                            onClickFunction: function (event) {
-                                              var target = event.target || event.cyTarget;
-                                              target.remove();
-                                            },
-                                            hasTrailingDivider: true
-                                          },
-                                          {
-                                            id: 'hide',
-                                            content: 'hide',
-                                            tooltipText: 'hide',
-                                            selector: '*',
-                                            onClickFunction: function (event) {
-                                              var target = event.target || event.cyTarget;
-                                              target.hide();
-                                            },
-                                            disabled: false
-                                          },
-                                          {
-                                            id: 'add-node',
-                                            content: 'add node',
-                                            tooltipText: 'add node',
-                                            image: {src : "add.svg", width : 12, height : 12, x : 6, y : 4},
-                                            coreAsWell: true,
-                                            onClickFunction: function (event) {
-                                              var data = {
-                                                  group: 'nodes'
-                                              };
-                                              
-                                              var pos = event.position || event.cyPosition;
-                                              
-                                              cy.add({
-                                                  data: data,
-                                                  position: {
-                                                      x: pos.x,
-                                                      y: pos.y
-                                                  }
-                                              });
-                                            }
-                                          },
-                                          {
-                                            id: 'remove-selected',
-                                            content: 'remove selected',
-                                            tooltipText: 'remove selected',
-                                            image: {src : "remove.svg", width : 12, height : 12, x : 6, y : 6},
-                                            coreAsWell: true,
-                                            onClickFunction: function (event) {
-                                              cy.$(':selected').remove();
-                                            }
-                                          },
-                                          {
-                                            id: 'select-all-nodes',
-                                            content: 'select all nodes',
-                                            tooltipText: 'select all nodes',
-                                            selector: 'node',
-                                            onClickFunction: function (event) {
-                                              selectAllOfTheSameType(event.target || event.cyTarget);
-                                            }
-                                          },
-                                          {
-                                            id: 'select-all-edges',
-                                            content: 'select all edges',
-                                            tooltipText: 'select all edges',
-                                            selector: 'edge',
-                                            onClickFunction: function (event) {
-                                              selectAllOfTheSameType(event.target || event.cyTarget);
-                                            }
-                                          }
-                                        ]
-                                      });
+  	cy.cxtmenu({
+					selector: 'node, edge',
+
+					commands: [
+						{
+							content: 'Data',
+							select: function(ele){
+								console.log( ele.id() );
+							}
+						},
+
+						{
+							content: 'Meta Data',
+							select: function(ele){
+								console.log( ele.data('name') );
+							}
+						},
+
+						{
+							content: 'Children',
+							select: function(ele){
+								console.log( ele.position() );
+							}
+						}
+					]
+				});
+  	cy.on('select unselect', 'node', _.debounce( function(e){
+      var node = cy.$('node:selected');
+
+      if( node.nonempty() ){
+        //showNodeInfo( node );
+
+        Promise.resolve().then(function(){
+          return highlight( node );
+        });
+      } else {
+        //hideNodeInfo();
+        //clear();
+      }
+
+    }, 100 ) );
 }
