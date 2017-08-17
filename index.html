@@ -49,7 +49,7 @@
 <script src="js/cytoscape.js"></script>
 <script src="js/main.js"></script>
 <script src="js/search.js"></script>
-<script src="js/cytoscape-context-menus.js"></script>
+<script src="js/cytoscape-cxtmenu.js"></script>
 
 
 <div class="navbar navbar-inverse navbar-static-top" role="navigation">
@@ -89,13 +89,18 @@
 <div class="container-fluid">
   <div class="row content">
     <div class="col-sm-3 sidenav">
-      <div id="relBadges" class="container">
-        <h2>Relationships</h2>
-        <a href="#">News <span class="badge">5</span></a><br>
-        <a href="#">Comments <span class="badge">10</span></a><br>
-        <a href="#">Updates <span class="badge">2</span></a>
+      <div id="relBadges" class="buttons">
+        <h3>Select Node</h3>
+        <div id="selectNode" ></div>
       </div>
-
+		<div id="layout" class="buttons">
+			<h3>Layouts</h3>
+			<button type="button" id="b1">Random</button>
+			<button type="button" id="b2">Cose</button>
+			<button type="button" id="b3">Breadth First</button>
+			<!-- <button type="button">Spread</button>
+			<button type="button">Cose-Bilkent</button> -->
+		</div>
       <div class="input-group">
         
       </div>
