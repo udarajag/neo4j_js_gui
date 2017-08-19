@@ -222,6 +222,7 @@ function intiGraph(returnData){
 						}
 					]
 				});
+
   	cy.on('select unselect', 'node', function(e){
       //var node = cy.$('node:selected');
 
