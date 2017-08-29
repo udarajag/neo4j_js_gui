@@ -148,19 +148,21 @@ function intiGraph(returnData){
 						{
 							selector: 'node',
 							style: {
-								'font-size': '23px',
-								'width': '80px',
-						        'height': '80px',
+
+								'width': '100px',
+						        'height': '100px',
 								'background-color': '#40E0D0',
 								'label': 'data(name)',
 								'border-style': 'solid',
 								'border-color': '#008B8B',
 								'border-width': '1px',
-								'padding': '10px 2% 15px 15px',
+//								'padding': '10px 2% 15px 15px',
 								'caption-side': 'bottom',
 								'text-valign': 'center',
 						        'text-halign': 'center',
 								'content': 'data(name)',
+								'color': 'white',
+                                'text-outline-width': 2,
 							}
 						},
 
@@ -177,7 +179,11 @@ function intiGraph(returnData){
 						{
 							selector: ':selected',
 							style: {
-
+                                'background-color': 'black',
+                                'line-color': 'black',
+                                'target-arrow-color': 'black',
+                                'source-arrow-color': 'black',
+                                'text-outline-color': 'black'
 							}
 						}
 					],
