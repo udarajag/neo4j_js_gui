@@ -247,4 +247,38 @@ function intiGraph(returnData){
       }
 
     });
+
+    cy.elements().qtip({
+        content: function(){ return 'Example qTip on ele ' + this.id() },
+        position: {
+            my: 'top center',
+            at: 'bottom center'
+        },
+        style: {
+            classes: 'qtip-bootstrap',
+            tip: {
+                width: 16,
+                height: 8
+            }
+        }
+    });
+
+    cy.qtip({
+        content: 'Example qTip on core bg',
+        position: {
+            my: 'top center',
+            at: 'bottom center'
+        },
+        show: {
+            cyBgOnly: true
+        },
+        style: {
+            classes: 'qtip-bootstrap',
+            tip: {
+                width: 16,
+                height: 8
+            }
+        }
+    });
+
 }
