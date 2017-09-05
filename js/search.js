@@ -42,6 +42,10 @@ function getNodeNameCy(node) {
     }
 }
 
+function getNodeColor(node){
+    return "#40E0D0";
+}
+
 function intiGraphCy(returnData){
 
 	var elements = [];
@@ -79,7 +83,7 @@ function intiGraphCy(returnData){
 		  elements.push(relationship);
 		})
 
-		});
+    });
 
 
 	var cy = cytoscape({
@@ -96,7 +100,8 @@ function intiGraphCy(returnData){
 
 								'width': '100px',
 						        'height': '100px',
-								'background-color': '#40E0D0',
+								//'background-color': '#40E0D0',
+								'background-color': getNodeColor(elements),
 								'label': 'data(name)',
 								'border-style': 'solid',
 								'border-color': '#008B8B',
