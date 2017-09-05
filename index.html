@@ -50,6 +50,7 @@
 <script src="js/main.js"></script>
 <script src="js/search.js"></script>
 <script src="js/cytoscape-cxtmenu.js"></script>
+<script src="js/cytoscape-qtip.js"></script>
 
 
 <div class="navbar navbar-inverse navbar-static-top" role="navigation">
@@ -67,8 +68,9 @@
     <div class="collapse navbar-collapse navbar-ex1-collapse">
 
         <ul class="nav navbar-nav">
-            <li><a>ABOUT</a></li>
-            <li><a>CONTACT</a></li>
+            <li><a href="html/conceptView.html">Demographic Visualization</a></li>
+            <li><a href="html/demoView.html">Concept Visualization</a></li>
+            <li><a href="html/ontologyView.html">Ontology Visualization</a></li>
         </ul>
 
         <div class="col-sm-3 pull-right">
@@ -86,12 +88,15 @@
 
     </div>
 </div>
+
+
+
 <div class="container-fluid">
   <div class="row content">
     <div class="col-sm-3 sidenav">
       <div id="relBadges" class="buttons">
         <h3>Selected Node</h3>
-          <!--<div id="dataSel"></div>-->
+          <div id="dataSel"></div>
         <form>
           <div class="form-group">
               <label for="selData">Data:</label>
@@ -104,8 +109,8 @@
 			<button type="button" id="b1">Random</button>
 			<button type="button" id="b2">Cose</button>
 			<button type="button" id="b3">Breadth First</button>
-			<!-- <button type="button">Spread</button>
-			<button type="button">Cose-Bilkent</button> -->
+			<button type="button">Spread</button>
+			<button type="button">Cose-Bilkent</button>
 		</div>
       <div class="input-group">
 
@@ -115,7 +120,7 @@
     <div class="col-sm-9">
     	<div id="cy"></div>
     </div>
-    
+
   </div>
 </div>
 

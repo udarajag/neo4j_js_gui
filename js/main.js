@@ -35,27 +35,28 @@ function sendAjax(method, url, data, success, error){
 }
 
 function initialize(){
-	var data = {
-			  "statements" : [ {
-				  "statement" : "MATCH (x )-[r]-(y) RETURN x,r,y LIMIT 25",
-				    "resultDataContents" : [  "graph" ]
-				  } ]
-				};
-	sendAjax("POST", "http://localhost:7474/db/data/transaction/commit", data, intiGraph, null);
-	var data2 = {
-			  "statements" : [ {
-				  "statement" : "MATCH (x )-[r]-(y) RETURN x,r,y LIMIT 25",
-				    "resultDataContents" : [  "graph" ]
-				  } ]
-				};
-	sendAjax("POST", "http://localhost:7474/db/data/transaction/commit", data2, initBadge, null);
-
+//	var data = {
+//			  "statements" : [ {
+//				  "statement" : "MATCH (x)-[r]-(y) RETURN x,r,y LIMIT 25",
+//				    "resultDataContents" : [  "graph" ]
+//				  } ]
+//				};
+//
+//	sendAjax("POST", "http://127.0.0.1:7474/db/data/transaction/commit", data, intiGraph, null);
+//	var data2 = {
+//			  "statements" : [ {
+//				  "statement" : "MATCH (x)-[r]-(y) RETURN x,r,y LIMIT 25",
+//				    "resultDataContents" : [  "graph" ]
+//				  } ]
+//				};
+//	sendAjax("POST", "http://127.0.0.1:7474/db/data/transaction/commit", data2, initBadge, null);
+    searchByQuery("MATCH (n1:DataRecord)-[r]->(n2) RETURN r, n1, n2 LIMIT 25");
 }
 
 function search(){
 	var statementx = $('#freeTS').val();
 	if(statementx!='undefined' && statementx != ''){
-		var query = "MATCH ((x )-[r]-(y)) WHERE x.name =~ '(?i).*" + statementx + ".*' or y.name =~ '(?i).*" + statementx + ".*' RETURN x,r,y";
+		var query = "MATCH ((x)-[r]-(y)) WHERE x.name =~ '(?i).*" + statementx + ".*' or y.name =~ '(?i).*" + statementx + ".*' RETURN x,r,y";
 		
 		var data = {
 			  	"statements" :[ {
@@ -97,14 +98,32 @@ function prettyJson(json) {
     });
 }
 
+function getNodeName(node) {
+    var nodeLabel = node.labels;
+    if(nodeLabel=="DataRecord"){
+        return node.properties.uri;
+    }else if(nodeLabel =="DemConceptInstance"){
+        return node.properties.label;
+    }else if(nodeLabel == "DemVal"){
+        return "";
+    }else if(nodeLabel == "DemConcept"){
+        return node.properties.name;
+    }else {
+        return "Unknown node";
+    }
+}
 
+//DemConceptInstanc
+//DataRecord = show uri color : Blue
+//DemVal
 function intiGraph(returnData){
 	
 	var elements = [];
 	var elementObjs = returnData.results[0].data;
 	$.each(elementObjs, function( index, value ) {
 		$.each(value.graph.nodes, function( index1, nodeObj ) {
-			var nodeName = nodeObj.properties.name;
+		    //var nodeType = getNodeType(nodeObj.labels);
+			var nodeName = getNodeName(nodeObj);
 			if(nodeName.length > 8){
 				nodeName = nodeName.substring(0, 8) + '...';
 			}
@@ -247,4 +266,38 @@ function intiGraph(returnData){
       }
 
     });
+
+//    cy.elements().qtip({
+//        content: function(){ return 'Example qTip on ele ' + this.id() },
+//        position: {
+//            my: 'top center',
+//            at: 'bottom center'
+//        },
+//        style: {
+//            classes: 'qtip-bootstrap',
+//            tip: {
+//                width: 16,
+//                height: 8
+//            }
+//        }
+//    });
+//
+//    cy.qtip({
+//        content: 'Example qTip on core bg',
+//        position: {
+//            my: 'top center',
+//            at: 'bottom center'
+//        },
+//        show: {
+//            cyBgOnly: true
+//        },
+//        style: {
+//            classes: 'qtip-bootstrap',
+//            tip: {
+//                width: 16,
+//                height: 8
+//            }
+//        }
+//    });
+
 }
