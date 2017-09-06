@@ -117,8 +117,7 @@ function intiGraphCy(returnData){
 		})
 
 		$.each(value.graph.relationships, function( index2, relationObj ) {
-		  var relationship = {data: { id: relationObj.id
-		    , source: relationObj.startNode
+		  var relationship = {data: {  source: relationObj.startNode
 		    , target: relationObj.endNode
 		    , name:relationObj.type
 		    , edgeColor: getEdgeColor(relationObj)}};
