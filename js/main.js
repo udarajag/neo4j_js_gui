@@ -35,27 +35,28 @@ function sendAjax(method, url, data, success, error){
 }
 
 function initialize(){
-	var data = {
-			  "statements" : [ {
-				  "statement" : "MATCH (x )-[r]-(y) RETURN x,r,y LIMIT 25",
-				    "resultDataContents" : [  "graph" ]
-				  } ]
-				};
-	sendAjax("POST", "http://localhost:7474/db/data/transaction/commit", data, intiGraph, null);
-	var data2 = {
-			  "statements" : [ {
-				  "statement" : "MATCH (x )-[r]-(y) RETURN x,r,y LIMIT 25",
-				    "resultDataContents" : [  "graph" ]
-				  } ]
-				};
-	sendAjax("POST", "http://localhost:7474/db/data/transaction/commit", data2, initBadge, null);
-
+//	var data = {
+//			  "statements" : [ {
+//				  "statement" : "MATCH (x)-[r]-(y) RETURN x,r,y LIMIT 25",
+//				    "resultDataContents" : [  "graph" ]
+//				  } ]
+//				};
+//
+//	sendAjax("POST", "http://127.0.0.1:7474/db/data/transaction/commit", data, intiGraph, null);
+//	var data2 = {
+//			  "statements" : [ {
+//				  "statement" : "MATCH (x)-[r]-(y) RETURN x,r,y LIMIT 25",
+//				    "resultDataContents" : [  "graph" ]
+//				  } ]
+//				};
+//	sendAjax("POST", "http://127.0.0.1:7474/db/data/transaction/commit", data2, initBadge, null);
+    searchByQuery("MATCH (n1:DataRecord)-[r]->(n2) RETURN r, n1, n2 LIMIT 25");
 }
 
 function search(){
 	var statementx = $('#freeTS').val();
 	if(statementx!='undefined' && statementx != ''){
-		var query = "MATCH ((x )-[r]-(y)) WHERE x.name =~ '(?i).*" + statementx + ".*' or y.name =~ '(?i).*" + statementx + ".*' RETURN x,r,y";
+		var query = "MATCH ((x)-[r]-(y)) WHERE x.name =~ '(?i).*" + statementx + ".*' or y.name =~ '(?i).*" + statementx + ".*' RETURN x,r,y";
 		
 		var data = {
 			  	"statements" :[ {
@@ -75,14 +76,54 @@ function initBadge(returnData){
 	//alert(returnData);
 }
 
+function prettyJson(json) {
+    if (typeof json != 'string') {
+         json = JSON.stringify(json, undefined, 2);
+    }
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        var cls = 'number';
+        if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+                cls = 'key';
+            } else {
+                cls = 'string';
+            }
+        } else if (/true|false/.test(match)) {
+            cls = 'boolean';
+        } else if (/null/.test(match)) {
+            cls = 'null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+    });
+}
 
+function getNodeName(node) {
+    var nodeLabel = node.labels;
+    if(nodeLabel=="DataRecord"){
+        return node.properties.uri;
+    }else if(nodeLabel =="DemConceptInstance"){
+        return node.properties.label;
+    }else if(nodeLabel == "DemVal"){
+        return "";
+    }else if(nodeLabel == "DemConcept"){
+        return node.properties.name;
+    }else {
+        return "Unknown node";
+    }
+}
+
+//DemConceptInstanc
+//DataRecord = show uri color : Blue
+//DemVal
 function intiGraph(returnData){
 	
 	var elements = [];
 	var elementObjs = returnData.results[0].data;
 	$.each(elementObjs, function( index, value ) {
 		$.each(value.graph.nodes, function( index1, nodeObj ) {
-			var nodeName = nodeObj.properties.name;
+		    //var nodeType = getNodeType(nodeObj.labels);
+			var nodeName = getNodeName(nodeObj);
 			if(nodeName.length > 8){
 				nodeName = nodeName.substring(0, 8) + '...';
 			}
@@ -126,19 +167,21 @@ function intiGraph(returnData){
 						{
 							selector: 'node',
 							style: {
-								'font-size': '23px',
-								'width': '80px',
-						        'height': '80px',
+
+								'width': '100px',
+						        'height': '100px',
 								'background-color': '#40E0D0',
 								'label': 'data(name)',
 								'border-style': 'solid',
 								'border-color': '#008B8B',
 								'border-width': '1px',
-								'padding': '10px 2% 15px 15px',
+//								'padding': '10px 2% 15px 15px',
 								'caption-side': 'bottom',
 								'text-valign': 'center',
 						        'text-halign': 'center',
 								'content': 'data(name)',
+								'color': 'white',
+                                'text-outline-width': 2,
 							}
 						},
 
@@ -155,7 +198,11 @@ function intiGraph(returnData){
 						{
 							selector: ':selected',
 							style: {
-
+                                'background-color': 'black',
+                                'line-color': 'black',
+                                'target-arrow-color': 'black',
+                                'source-arrow-color': 'black',
+                                'text-outline-color': 'black'
 							}
 						}
 					],
@@ -192,6 +239,9 @@ function intiGraph(returnData){
 							}
 						},
 
+
+						//Check
+
 						{
 							content: 'Children',
 							select: function(ele){
@@ -200,19 +250,54 @@ function intiGraph(returnData){
 						}
 					]
 				});
-  	cy.on('select unselect', 'node', _.debounce( function(e){
-      var node = cy.$('node:selected');
 
-      if( node.nonempty() ){
-        //showNodeInfo( node );
+  	cy.on('select unselect', 'node', function(e){
+      //var node = cy.$('node:selected');
 
+      if( e!=null ){
+        var json = JSON.stringify(e.target._private.data);
+        $("#selData").val(json);
+        //$("#dataSel").html(prettyJson(json));
         Promise.resolve().then(function(){
-          return highlight( node );
+          //return highlight( node );
         });
       } else {
-        //hideNodeInfo();
-        //clear();
+        $("selData").val('');
       }
 
-    }, 100 ) );
+    });
+
+//    cy.elements().qtip({
+//        content: function(){ return 'Example qTip on ele ' + this.id() },
+//        position: {
+//            my: 'top center',
+//            at: 'bottom center'
+//        },
+//        style: {
+//            classes: 'qtip-bootstrap',
+//            tip: {
+//                width: 16,
+//                height: 8
+//            }
+//        }
+//    });
+//
+//    cy.qtip({
+//        content: 'Example qTip on core bg',
+//        position: {
+//            my: 'top center',
+//            at: 'bottom center'
+//        },
+//        show: {
+//            cyBgOnly: true
+//        },
+//        style: {
+//            classes: 'qtip-bootstrap',
+//            tip: {
+//                width: 16,
+//                height: 8
+//            }
+//        }
+//    });
+
 }
