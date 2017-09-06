@@ -57,6 +57,31 @@ function getNodeColor(node){
     }
 }
 
+function getEdgeColor(edge){
+    //alert(edge);
+    var relType = edge.type;
+    if(relType == "ofDemConcInst"){
+        return "#7c1655"
+    }else{
+        return "#0f0009"
+    }
+}
+
+function getNodeType(node){
+    var nodeLabel = node.labels;
+    if(nodeLabel=="DataRecord"){
+        return "DR";
+    }else if(nodeLabel =="DemConceptInstance"){
+        return "CI";
+    }else if(nodeLabel == "DemVal"){
+        return "DV";
+    }else if(nodeLabel == "DemConcept"){
+        return "DC";
+    }else {
+        return "UN";
+    }
+}
+
 function intiGraphCy(returnData){
 
 	var elements = [];
@@ -70,28 +95,23 @@ function intiGraphCy(returnData){
 //			}
 
 			//var nodeObj = value.graph.nodes[0];
-		  var node = {data: {id:nodeObj.id,
-			  				name:nodeName,
-			  				fullName: nodeObj.properties.name,
-			  				nodeColor: getNodeColor(nodeObj)
+		  var node = {data: {id:nodeObj.id
+		                    , name:nodeName
+		                    ,fullName: nodeObj.properties.name
+		                    ,nodeColor: getNodeColor(nodeObj)
+		                    ,nodeType: getNodeType(nodeObj)
 		  }};
 
 		  elements.push(node);
 
 		})
 
-
-		$.each(value.graph.relations, function( index1, relationObj ) {
-
-		  var node = {data: {id:relationObj.id,
-			  				name:relationObj.properties.name }};
-
-		  elements.push(node);
-
-		})
-
 		$.each(value.graph.relationships, function( index2, relationObj ) {
-		  var relationship = {data: { id: relationObj.id, source: relationObj.startNode, target: relationObj.endNode, name:relationObj.type }};
+		  var relationship = {data: { id: relationObj.id
+		    , source: relationObj.startNode
+		    , target: relationObj.endNode
+		    , name:relationObj.type
+		    , edgeColor: getEdgeColor(relationObj)}};
 		  elements.push(relationship);
 		})
 
@@ -133,7 +153,8 @@ function intiGraphCy(returnData){
 								'curve-style': 'bezier',
 								'target-arrow-shape': 'triangle',
 								'label': 'data(name)',
-								'text-rotation': 'autorotate'
+								'text-rotation': 'autorotate',
+								'line-color': 'data(edgeColor)'
 							}
 						},
 
@@ -203,5 +224,15 @@ function intiGraphCy(returnData){
         $("selData").val('');
       }
 
+    });
+
+    cy.on('tap', 'node', function(){
+      try { // your browser may block popups
+        if(this.data('nodeType') == "DR"){
+            window.open( this.data('name') );
+        }
+      } catch(e){ // fall back on url change
+        window.location.href = this.data('href');
+      }
     });
 }
