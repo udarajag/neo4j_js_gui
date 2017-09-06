@@ -42,6 +42,15 @@ function getNodeNameCy(node) {
     }
 }
 
+function getNodeLabel(node){
+	var nodeLabel = node.labels;
+    if(nodeLabel =="DemConceptInstance"){
+        return node.properties.name;
+    }else{
+    	return "";
+    }
+}
+
 function getNodeColor(node){
     var nodeLabel = node.labels;
     if(nodeLabel=="DataRecord"){
@@ -100,6 +109,7 @@ function intiGraphCy(returnData){
 		                    ,fullName: nodeObj.properties.name
 		                    ,nodeColor: getNodeColor(nodeObj)
 		                    ,nodeType: getNodeType(nodeObj)
+		                    ,label : getNodeLabel(nodeObj)
 		  }};
 
 		  elements.push(node);
@@ -227,12 +237,16 @@ function intiGraphCy(returnData){
     });
 
     cy.on('tap', 'node', function(){
-      try { // your browser may block popups
-        if(this.data('nodeType') == "DR"){
+        var nodeType = this.data('nodeType');
+      try {
+        if( nodeType == "DR"){
             window.open( this.data('name') );
+        }else if(nodeType == "CI"){
+            var query = "match(n1:DemConceptInstance)-[r:hasValue]->(n2:DemVal) where n1.name='"+this.data('label')+"' return r,n1,n2";
+            searchByQuery(query);
         }
-      } catch(e){ // fall back on url change
-        window.location.href = this.data('href');
+      } catch(e){
+        window.location.href = this.data('name');
       }
     });
 }
