@@ -34,7 +34,7 @@ function getNodeNameCy(node) {
     }else if(nodeLabel =="DemConceptInstance"){
         return node.properties.label;
     }else if(nodeLabel == "DemVal"){
-        return "";
+        return node.properties.uri;
     }else if(nodeLabel == "DemConcept"){
         return node.properties.name;
     }else {
@@ -43,7 +43,18 @@ function getNodeNameCy(node) {
 }
 
 function getNodeColor(node){
-    return "#40E0D0";
+    var nodeLabel = node.labels;
+    if(nodeLabel=="DataRecord"){
+        return "#f7b738";
+    }else if(nodeLabel =="DemConceptInstance"){
+        return "#d17fcb";
+    }else if(nodeLabel == "DemVal"){
+        return "#86dce8";
+    }else if(nodeLabel == "DemConcept"){
+        return "#8ced80";
+    }else {
+        return "#40E0D0";
+    }
 }
 
 function intiGraphCy(returnData){
@@ -54,14 +65,15 @@ function intiGraphCy(returnData){
 		$.each(value.graph.nodes, function( index1, nodeObj ) {
 		    //var nodeType = getNodeType(nodeObj.labels);
 			var nodeName = getNodeNameCy(nodeObj);
-			if(nodeName.length > 8){
-				nodeName = nodeName.substring(0, 8) + '...';
-			}
+//			if(nodeName.length > 8){
+//				nodeName = nodeName.substring(0, 8) + '...';
+//			}
 
 			//var nodeObj = value.graph.nodes[0];
 		  var node = {data: {id:nodeObj.id,
 			  				name:nodeName,
-			  				fullName: nodeObj.properties.name
+			  				fullName: nodeObj.properties.name,
+			  				nodeColor: getNodeColor(nodeObj)
 		  }};
 
 		  elements.push(node);
@@ -101,7 +113,7 @@ function intiGraphCy(returnData){
 								'width': '100px',
 						        'height': '100px',
 								//'background-color': '#40E0D0',
-								'background-color': getNodeColor(elements),
+								'background-color': 'data(nodeColor)',
 								'label': 'data(name)',
 								'border-style': 'solid',
 								'border-color': '#008B8B',
