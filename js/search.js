@@ -283,7 +283,7 @@ function getNodeDesc(json){
 	var jsonObj = $.parseJSON(json);
 	$.each(jsonObj, function(index, element) {
 		if(index != 'nodeColor' && index != 'nodeType' && index != 'id'){
-			html += "<div class='nodeDescLabel1'>" + index + "</div><div lass='nodeDescLabel2'>: " + element + "</div><br/>";
+			html += "<div class='nodeDescLabel1'>" + index + "</div><div class='nodeDescLabel2 wordwrap'>:" + element + "</div>";
 		}
 	});
 	return html;
