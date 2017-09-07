@@ -147,7 +147,7 @@ function intiGraphCy(returnData){
 								'border-style': 'solid',
 								'border-color': '#008B8B',
 								'border-width': '1px',
-								'caption-side': 'bottom',
+								//'caption-side': 'bottom',
 								'text-valign': 'center',
 						        'text-halign': 'center',
 								'content': 'data(name)',
