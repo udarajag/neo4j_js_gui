@@ -3,16 +3,8 @@ var glayout = 'breadthfirst';
 $(document).ready(function(){
 	initialize();
 	//To set different layouts
-	$("#b1").click(function(){
-		glayout = 'random';
-		initialize();
-	});
-		$("#b2").click(function(){
-		glayout = 'cose';
-		initialize();
-	});
-		$("#b3").click(function(){
-		glayout = 'breadthfirst';
+	$("[id^='layoutBtn_']").click(function(){
+		glayout = $(this).attr('id').split("_")[1];
 		initialize();
 	});
 });
