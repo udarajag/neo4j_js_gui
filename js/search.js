@@ -30,11 +30,11 @@ function searchByQuery(query){
 function getNodeNameCy(node) {
     var nodeLabel = node.labels;
     if(nodeLabel=="DataRecord"){
-        return node.properties.uri;
+        return node.properties.name;
     }else if(nodeLabel =="DemConceptInstance"){
-        return node.properties.label;
+        return node.properties.name;
     }else if(nodeLabel == "DemVal"){
-        return node.properties.uri;
+        return node.properties.name;
     }else if(nodeLabel == "DemConcept"){
         return node.properties.name;
     }else {
@@ -42,14 +42,14 @@ function getNodeNameCy(node) {
     }
 }
 
-function getNodeLabel(node){
+/*function getNodeLabel(node){
 	var nodeLabel = node.labels;
     if(nodeLabel =="DemConceptInstance"){
         return node.properties.name;
     }else{
     	return "";
     }
-}
+}*/
 
 function getNodeColor(node){
     var nodeLabel = node.labels;
@@ -91,6 +91,38 @@ function getNodeType(node){
     }
 }
 
+function getNodeByType(nodeObj){
+	var nodeName = getNodeNameCy(nodeObj);
+//	if(nodeName.length > 8){
+//		nodeName = nodeName.substring(0, 8) + '...';
+//	}
+
+	//var nodeObj = value.graph.nodes[0];
+	var nodeType = getNodeType(nodeObj);
+  var node = {data: {id:nodeObj.id
+                    , name:nodeName
+                    ,fullName: nodeObj.properties.name
+                    ,nodeColor: getNodeColor(nodeObj)
+                    ,nodeType: nodeType
+                    //,label : getNodeLabel(nodeObj)
+  }};
+  
+  if(nodeType == 'CI'){
+	  //node.data.push({'question':nodeObj.question});
+	  node.data['question'] = nodeObj.properties.question;
+	  node.data['dataType'] = nodeObj.properties.dataType;
+	  node.data['uri'] = nodeObj.properties.uri;
+	  node.data['label'] = nodeObj.properties.label;
+  }else if(nodeType == 'DC'){
+	  node.data['uri'] = nodeObj.properties.uri;
+  }else if(nodeType == 'DV'){
+	  node.data['uri'] = nodeObj.properties.uri;
+	  node.data['label'] = nodeObj.properties.label;
+	  node.data['value'] = nodeObj.properties.value;
+  }
+  return node;
+}
+
 function intiGraphCy(returnData){
 
 	var elements = [];
@@ -98,21 +130,7 @@ function intiGraphCy(returnData){
 	$.each(elementObjs, function( index, value ) {
 		$.each(value.graph.nodes, function( index1, nodeObj ) {
 		    //var nodeType = getNodeType(nodeObj.labels);
-			var nodeName = getNodeNameCy(nodeObj);
-//			if(nodeName.length > 8){
-//				nodeName = nodeName.substring(0, 8) + '...';
-//			}
-
-			//var nodeObj = value.graph.nodes[0];
-		  var node = {data: {id:nodeObj.id
-		                    , name:nodeName
-		                    ,fullName: nodeObj.properties.name
-		                    ,nodeColor: getNodeColor(nodeObj)
-		                    ,nodeType: getNodeType(nodeObj)
-		                    ,label : getNodeLabel(nodeObj)
-		  }};
-
-		  elements.push(node);
+		  elements.push(getNodeByType(nodeObj));
 
 		})
 
@@ -153,6 +171,7 @@ function intiGraphCy(returnData){
 								'content': 'data(name)',
 								'color': 'white',
                                 'text-outline-width': 2,
+                                'background-opacity': 0.9,
 							}
 						},
 
@@ -163,18 +182,25 @@ function intiGraphCy(returnData){
 								'target-arrow-shape': 'triangle',
 								'label': 'data(name)',
 								'text-rotation': 'autorotate',
-								'line-color': 'data(edgeColor)'
+								'line-color': 'data(edgeColor)',
+								'text-margin-x':-15
 							}
 						},
 
 						{
 							selector: ':selected',
 							style: {
-                                'background-color': 'black',
+								'background-opacity': 1,
+                                //'background-color': 'black',
                                 'line-color': 'black',
                                 'target-arrow-color': 'black',
                                 'source-arrow-color': 'black',
-                                'text-outline-color': 'black'
+                                'text-outline-color': 'black',
+                                'width': '130px',
+						        'height': '130px',
+						        'border-width': '3px',
+						        'font-size':'1.3em',
+						        'font-weight':'bold'
 							}
 						}
 					],
@@ -226,11 +252,12 @@ function intiGraphCy(returnData){
   	cy.on('select unselect', 'node', function(e){
       if( e!=null ){
         var json = JSON.stringify(e.target._private.data);
-        $("#selData").val(json);
+        $("#selNodeDes").html(getNodeDesc(json));
         Promise.resolve().then(function(){
         });
       } else {
-        $("selData").val('');
+        //$("selData").val('');
+    	  $("#selNodeDes").html('');
       }
 
     });
@@ -241,11 +268,23 @@ function intiGraphCy(returnData){
         if( nodeType == "DR"){
             window.open( this.data('name') );
         }else if(nodeType == "CI"){
-            var query = "match(n1:DemConceptInstance)-[r:hasValue]->(n2:DemVal) where n1.name='"+this.data('label')+"' return r,n1,n2";
+            var query = "match(n1:DemConceptInstance)-[r:hasValue]->(n2:DemVal) where n1.uri='"+this.data('uri')+"' return r,n1,n2";
             searchByQuery(query);
         }
       } catch(e){
         window.location.href = this.data('name');
       }
     });
+}
+
+
+function getNodeDesc(json){
+	var html = "";
+	var jsonObj = $.parseJSON(json);
+	$.each(jsonObj, function(index, element) {
+		if(index != 'nodeColor' && index != 'nodeType' && index != 'id'){
+			html += "<div class='nodeDescLabel1'>" + index + "</div><div lass='nodeDescLabel2'>: " + element + "</div><br/>";
+		}
+	});
+	return html;
 }
