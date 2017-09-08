@@ -4,24 +4,3 @@
   height: 1000px;
   display: block;
 }
-
-#selNodeDes{
-	padding: 5px 0px 5px 10px,
-}
-
-.nodeDescLabel1{
-	width: 100px;
-	float: left
-}
-.nodeDescLabel2{
-	float: left;
-	width: 200px;
-}
-
-.wordwrap { 
-   white-space: pre-wrap;      /* CSS3 */   
-   white-space: -moz-pre-wrap; /* Firefox */    
-   white-space: -pre-wrap;     /* Opera <7 */   
-   white-space: -o-pre-wrap;   /* Opera 7 */    
-   word-wrap: break-word;      /* IE */
-}
