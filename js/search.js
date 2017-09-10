@@ -93,11 +93,6 @@ function getNodeType(node){
 
 function getNodeByType(nodeObj){
 	var nodeName = getNodeNameCy(nodeObj);
-//	if(nodeName.length > 8){
-//		nodeName = nodeName.substring(0, 8) + '...';
-//	}
-
-	//var nodeObj = value.graph.nodes[0];
 	var nodeType = getNodeType(nodeObj);
   var node = {data: {id:nodeObj.id
                     , name:nodeName
@@ -119,6 +114,8 @@ function getNodeByType(nodeObj){
 	  node.data['uri'] = nodeObj.properties.uri;
 	  node.data['label'] = nodeObj.properties.label;
 	  node.data['value'] = nodeObj.properties.value;
+  }else if(nodeType == "DR"){
+    node.data['name'] = nodeObj.properties.uri;
   }
   return node;
 }

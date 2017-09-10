@@ -1,0 +1,35 @@
+<div class="navbar navbar-inverse navbar-static-top" role="navigation">
+
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" rel="home" title="Neo4j search helper">N4J Explorer</a>
+    </div>
+
+    <div class="collapse navbar-collapse navbar-ex1-collapse">
+
+        <ul class="nav navbar-nav">
+            <li><a href="index.html">Demographic Visualization</a></li>
+            <li><a href="html/conceptView.html">Concept Visualization</a></li>
+            <li><a href="html/ontologyView.html">Ontology Visualization</a></li>
+        </ul>
+
+        <div class="col-sm-3 pull-right">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input id="freeTS" type="text" class="form-control" placeholder="Search" name="srch-term" id="srch-term">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" type="button" onclick="search()">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
