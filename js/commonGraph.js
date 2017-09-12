@@ -39,7 +39,7 @@ function intiGraphCy(returnData){
 		})
 
     });
-
+console.log(elements.length)
 
 	var cy = cytoscape({
 
@@ -173,16 +173,29 @@ function intiGraphCy(returnData){
     });
 }
 
-function getNodeColor(node){
-    var nodeLabel = node.labels;
-    if(nodeLabel=="DataRecord"){
+function getNodeColor(nodeType,node){
+    if(nodeType=="DR"){
         return "#f7b738";
-    }else if(nodeLabel =="DemConceptInstance"){
+    }else if(nodeType =="DCI"){
         return "#d17fcb";
-    }else if(nodeLabel == "DemVal"){
+    }else if(nodeType == "DV"){
         return "#86dce8";
-    }else if(nodeLabel == "DemConcept"){
+    }else if(nodeType == "DC"){
         return "#8ced80";
+    }else if(nodeType == "PB"){
+        return "#d17fcb";
+    }else if(nodeType == "RQ"){
+        return "#86dce8";
+    }else if(nodeType == "CI"){
+        return "#d17fcb";
+    }else if(nodeType == "CRC"){
+        return "#ff80df";
+    }else if(nodeType == "OCI"){
+        return "#5c00e6";
+    }else if(nodeType == "VAR"){
+        return "#996633";
+    }else if(nodeType == "VAL"){
+        return "#40bf40";
     }else {
         return "#40E0D0";
     }
@@ -267,7 +280,7 @@ function getNodeByType(nodeObj){
   var node = {data: {id:nodeObj.id
                     , name:nodeName
                     ,fullName: nodeObj.properties.name
-                    ,nodeColor: getNodeColor(nodeObj)
+                    ,nodeColor: getNodeColor(nodeType,nodeObj)
                     ,nodeType: nodeType
                     //,label : getNodeLabel(nodeObj)
   }};
@@ -311,4 +324,15 @@ function getNodeByType(nodeObj){
 	  node.data['value'] = nodeObj.properties.value;
   }
   return node;
+}
+
+function getNodeDesc(json){
+	var html = "";
+	var jsonObj = $.parseJSON(json);
+	$.each(jsonObj, function(index, element) {
+		if(index != 'nodeColor' && index != 'nodeType' && index != 'id'){
+			html += "<div class='col-xs-4'>" + index + "</div><div class='col-xs-8'>:" + element + "</div>";
+		}
+	});
+	return html;
 }

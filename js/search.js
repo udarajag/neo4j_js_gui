@@ -94,7 +94,7 @@ function getNodeType(node){
 function getNodeByType(nodeObj){
 	var nodeName = getNodeNameCy(nodeObj);
 	var nodeType = getNodeType(nodeObj);
-  var node = {data: {id:nodeObj.id
+  var node = {data: {id:nodeObj.id+'_node'
                     , name:nodeName
                     ,fullName: nodeObj.properties.name
                     ,nodeColor: getNodeColor(nodeObj)
@@ -132,7 +132,8 @@ function intiGraphCy(returnData){
 		})
 
 		$.each(value.graph.relationships, function( index2, relationObj ) {
-		  var relationship = {data: {  source: relationObj.startNode
+		  var relationship = {data: {  id:relationObj.id+'rel', 
+			  source: relationObj.startNode
 		    , target: relationObj.endNode
 		    , name:relationObj.type
 		    , edgeColor: getEdgeColor(relationObj)}};
