@@ -1,4 +1,4 @@
-var glayout = 'breadthfirst';
+/*var glayout = 'breadthfirst';
 
 $(document).ready(function(){
 	initialize();
@@ -7,7 +7,7 @@ $(document).ready(function(){
 		glayout = $(this).attr('id').split("_")[1];
 		initialize();
 	});
-});
+});*/
 
 
 /* AJAX send function */
@@ -26,7 +26,7 @@ function sendAjax(method, url, data, success, error){
 		});
 }
 
-function initialize(){
+/*function initialize(){
     searchByQuery("match (n1:DataRecord)-[r1:ofDemConcInst]->(n2), (n2)-[r2:ofDemConcept]->(n3) return r1,r2,n1,n2,n3 limit 2500");
 }
 
@@ -44,7 +44,7 @@ function search(){
 
 function initBadge(returnData){
 	//alert(returnData);
-}
+}*/
 
 function prettyJson(json) {
     if (typeof json != 'string') {
@@ -68,7 +68,7 @@ function prettyJson(json) {
     });
 }
 
-function getNodeName(node) {
+/*function getNodeName(node) {
     var nodeLabel = node.labels;
     if(nodeLabel=="DataRecord"){
         return node.properties.uri;
@@ -81,4 +81,4 @@ function getNodeName(node) {
     }else {
         return "Unknown node";
     }
-}
+}*/
