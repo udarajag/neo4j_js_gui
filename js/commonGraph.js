@@ -190,7 +190,7 @@ function getNodeColor(nodeType,node){
         return "#d17fcb";
     }else if(nodeType == "CRC"){
         return "#ff80df";
-    }else if(nodeType == "OCI"){
+    }else if(nodeType == "OC"){
         return "#5c00e6";
     }else if(nodeType == "VAR"){
         return "#996633";
@@ -229,8 +229,8 @@ function getNodeType(node){
         return "CI";
     }else if(nodeLabel == "CRC"){
         return "CRC";
-    }else if(nodeLabel == "OntConceptInstance"){
-        return "OCI";
+    }else if(nodeLabel == "OntConcept"){
+        return "OC";
     }else if(nodeLabel == "Variable"){
         return "VAR";
     }else if(nodeLabel == "Value"){
@@ -257,7 +257,7 @@ function getNodeNameCy(nodeType, node) {
         return node.properties.name;
     }else if(nodeType == "CRC"){
         return node.properties.relation;
-    }else if(nodeType == "OCI"){
+    }else if(nodeType == "OC"){
         return node.properties.name;
     }else if(nodeType == "VAR"){
         return node.properties.label;
@@ -308,7 +308,7 @@ function getNodeByType(nodeObj){
 	  //node.data['id'] = nodeObj.properties.id;
 	  node.data['crcNo'] = nodeObj.properties.crcNo;
 	  node.data['relation'] = nodeObj.properties.relation;
-  }else if(nodeType == 'OCI'){
+  }else if(nodeType == 'OC'){
 	  node.data['uri'] = nodeObj.properties.uri;
 	  node.data['prefix'] = nodeObj.properties.prefix;
 	  node.data['name'] = nodeObj.properties.name;

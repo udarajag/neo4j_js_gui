@@ -7,13 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
-    <link rel="stylesheet" type="text/css" href="css/main.css">
-    <link href="css/cytoscape-context-menus.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" type="text/css" href="../css/main.css">
+    <link href="../css/cytoscape-context-menus.css" rel="stylesheet" type="text/css"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <style>
     /* Set height of the grid so .sidenav can be 100% (adjust if needed) */
-    .row.content {height: 1500px}
+    .row.content {height: 100%}
 
     /* Set gray background color and 100% height */
     .sidenav {
@@ -42,20 +42,21 @@
     </style>
 </head>
 <body>
-<script src="js/jquery-3.2.1.js"></script>
-<script src="js/cytoscape.js"></script>
-<script src="js/main.js"></script>
-<script src="js/search.js"></script>
-<script src="js/cytoscape-cxtmenu.js"></script>
-<script src="js/cytoscape-qtip.js"></script>
+<script src="../js/jquery-3.2.1.js"></script>
+<script src="../js/cytoscape.js"></script>
+<script src="../js/main.js"></script>
+<script src="../js/commonGraph.js"></script>
+<script src="../js/ontologyView.js"></script>
+<script src="../js/cytoscape-cxtmenu.js"></script>
+<script src="../js/cytoscape-qtip.js"></script>
 <div id="header"></div>
 <div id="body"></div>
 <div id="footer"></div>
 
 <script>
-        $( "#header" ).load( "html/header.html" );
-        $( "#body" ).load( "html/demVisBody.html" );
-        $( "#footer" ).load( "html/footer.html" );
+        $( "#header" ).load( "header.html" );
+        $( "#body" ).load( "body.html" );
+        $( "#footer" ).load( "footer.html" );
 
 
 </script>
