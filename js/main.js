@@ -1,15 +1,3 @@
-/*var glayout = 'breadthfirst';
-
-$(document).ready(function(){
-	initialize();
-	//To set different layouts
-	$("[id^='layoutBtn_']").click(function(){
-		glayout = $(this).attr('id').split("_")[1];
-		initialize();
-	});
-});*/
-
-
 /* AJAX send function */
 function sendAjax(method, url, data, success, error){
 	$.ajax({
@@ -25,26 +13,6 @@ function sendAjax(method, url, data, success, error){
 		  error: error
 		});
 }
-
-/*function initialize(){
-    searchByQuery("match (n1:DataRecord)-[r1:ofDemConcInst]->(n2), (n2)-[r2:ofDemConcept]->(n3) return r1,r2,n1,n2,n3 limit 2500");
-}
-
-function search(){
-	var statementx = $('#freeTS').val();
-	if(statementx!='undefined' && statementx != ''){
-		var query = "MATCH ((x)-[r]-(y)) WHERE x.name =~ '(?i).*" + statementx + ".*' or y.name =~ '(?i).*" + statementx + ".*' RETURN x,r,y";
-		searchByQuery(query);
-	}
-	else{
-		alert("Please enter search text");
-	}
-	
-}
-
-function initBadge(returnData){
-	//alert(returnData);
-}*/
 
 function prettyJson(json) {
     if (typeof json != 'string') {
@@ -67,18 +35,3 @@ function prettyJson(json) {
         return '<span class="' + cls + '">' + match + '</span>';
     });
 }
-
-/*function getNodeName(node) {
-    var nodeLabel = node.labels;
-    if(nodeLabel=="DataRecord"){
-        return node.properties.uri;
-    }else if(nodeLabel =="DemConceptInstance"){
-        return node.properties.label;
-    }else if(nodeLabel == "DemVal"){
-        return "";
-    }else if(nodeLabel == "DemConcept"){
-        return node.properties.name;
-    }else {
-        return "Unknown node";
-    }
-}*/
