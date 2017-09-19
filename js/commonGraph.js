@@ -23,6 +23,11 @@ function intiGraphCy(returnData){
 
 	var elements = [];
 	var elementObjs = returnData.results[0].data;
+
+    var allNodes = null;
+    var allEles = null;
+    var lastHighlighted = null;
+    var lastUnhighlighted = null;
 	$.each(elementObjs, function( index, value ) {
 		$.each(value.graph.nodes, function( index1, nodeObj ) {
 		    //var nodeType = getNodeType(nodeObj.labels);
@@ -39,7 +44,7 @@ function intiGraphCy(returnData){
 		})
 
     });
-console.log(elements.length)
+    console.log(elements.length)
 
 	var cy = cytoscape({
 
@@ -103,8 +108,47 @@ console.log(elements.length)
 					layout: {
 						name: glayout
 					},
+          }
+    );
+	allNodes = cy.nodes();
+    allEles = cy.elements();
 
-		});
+    cy.on('free', 'node', function( e ){
+          var n = e.cyTarget;
+          var p = n.position();
+
+          n.data('orgPos', {
+            x: p.x,
+            y: p.y
+          });
+    });
+
+    var runLayout = function(){
+          var p = node.data('orgPos');
+
+          var l = nhood.filter(':visible').makeLayout({
+            name: 'concentric',
+            fit: false,
+            animate: true,
+            animationDuration: aniDur,
+            animationEasing: easing,
+            boundingBox: {
+              x1: p.x - 1,
+              x2: p.x + 1,
+              y1: p.y - 1,
+              y2: p.y + 1
+            },
+            avoidOverlap: true,
+            concentric: function( ele ){
+              if( ele.same( node ) ){
+                return 2;
+              } else {
+                return 1;
+              }
+            },
+            levelWidth: function(){ return 1; },
+            padding: layoutPadding
+          });
 
 	var selectAllOfTheSameType = function(ele) {
                                     cy.elements().unselect();
@@ -171,6 +215,120 @@ console.log(elements.length)
         window.location.href = this.data('name');
       }
     });
+
+
+    function highlight( node ){
+        var oldNhood = lastHighlighted;
+
+        var nhood = lastHighlighted = node.closedNeighborhood();
+        var others = lastUnhighlighted = cy.elements().not( nhood );
+
+        var reset = function(){
+          cy.batch(function(){
+            others.addClass('hidden');
+            nhood.removeClass('hidden');
+
+            allEles.removeClass('faded highlighted');
+
+            nhood.addClass('highlighted');
+
+            others.nodes().forEach(function(n){
+              var p = n.data('orgPos');
+
+              n.position({ x: p.x, y: p.y });
+            });
+          });
+
+          return Promise.resolve().then(function(){
+            if( isDirty() ){
+              return fit();
+            } else {
+              return Promise.resolve();
+            };
+          }).then(function(){
+            return Promise.delay( aniDur );
+          });
+        };
+
+        var runLayout = function(){
+          var p = node.data('orgPos');
+
+          var l = nhood.filter(':visible').makeLayout({
+            name: 'concentric',
+            fit: false,
+            animate: true,
+            animationDuration: aniDur,
+            animationEasing: easing,
+            boundingBox: {
+              x1: p.x - 1,
+              x2: p.x + 1,
+              y1: p.y - 1,
+              y2: p.y + 1
+            },
+            avoidOverlap: true,
+            concentric: function( ele ){
+              if( ele.same( node ) ){
+                return 2;
+              } else {
+                return 1;
+              }
+            },
+            levelWidth: function(){ return 1; },
+            padding: layoutPadding
+          });
+
+          var promise = cy.promiseOn('layoutstop');
+
+          l.run();
+
+          return promise;
+        };
+
+        var fit = function(){
+          return cy.animation({
+            fit: {
+              eles: nhood.filter(':visible'),
+              padding: layoutPadding
+            },
+            easing: easing,
+            duration: aniDur
+          }).play().promise();
+        };
+
+        var showOthersFaded = function(){
+          return Promise.delay( 250 ).then(function(){
+            cy.batch(function(){
+              others.removeClass('hidden').addClass('faded');
+            });
+          });
+        };
+
+        return Promise.resolve()
+          .then( reset )
+          .then( runLayout )
+          .then( fit )
+          .then( showOthersFaded )
+        ;
+
+    }
+
+    cy.on('select unselect', 'node', _.debounce( function(e){
+          var node = cy.$('node:selected');
+
+          if( node.nonempty() ){
+
+            //showNodeInfo( node );
+
+            Promise.resolve().then(function(){
+              return highlight( node );
+            });
+          } else {
+            //hideNodeInfo();
+            clear();
+          }
+
+        }, 100 ) );
+
 }
 
 function getNodeColor(nodeType,node){
@@ -190,7 +348,7 @@ function getNodeColor(nodeType,node){
         return "#d17fcb";
     }else if(nodeType == "CRC"){
         return "#ff80df";
-    }else if(nodeType == "OCI"){
+    }else if(nodeType == "OC"){
         return "#5c00e6";
     }else if(nodeType == "VAR"){
         return "#996633";
@@ -229,8 +387,8 @@ function getNodeType(node){
         return "CI";
     }else if(nodeLabel == "CRC"){
         return "CRC";
-    }else if(nodeLabel == "OntConceptInstance"){
-        return "OCI";
+    }else if(nodeLabel == "OntConcept"){
+        return "OC";
     }else if(nodeLabel == "Variable"){
         return "VAR";
     }else if(nodeLabel == "Value"){
@@ -257,7 +415,7 @@ function getNodeNameCy(nodeType, node) {
         return node.properties.name;
     }else if(nodeType == "CRC"){
         return node.properties.relation;
-    }else if(nodeType == "OCI"){
+    }else if(nodeType == "OC"){
         return node.properties.name;
     }else if(nodeType == "VAR"){
         return node.properties.label;
@@ -308,7 +466,7 @@ function getNodeByType(nodeObj){
 	  //node.data['id'] = nodeObj.properties.id;
 	  node.data['crcNo'] = nodeObj.properties.crcNo;
 	  node.data['relation'] = nodeObj.properties.relation;
-  }else if(nodeType == 'OCI'){
+  }else if(nodeType == 'OC'){
 	  node.data['uri'] = nodeObj.properties.uri;
 	  node.data['prefix'] = nodeObj.properties.prefix;
 	  node.data['name'] = nodeObj.properties.name;
